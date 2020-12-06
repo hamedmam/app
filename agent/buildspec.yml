@@ -10,4 +10,5 @@ phases:
     commands:
   post_build:
     commands:
+      - cd agent
       - sls deploy -v --region ca-central-1
