@@ -11,4 +11,4 @@ phases:
     commands:
   post_build:
     commands:
-      - sls deploy -v
+      - sls deploy -v --region us-east-2
