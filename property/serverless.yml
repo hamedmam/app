@@ -4,20 +4,40 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
+  - serverless-domain-manager
+  - serverless-api-gateway-caching
 
 provider:
-  httpApi:
-    cors: true
   name: aws
   runtime: nodejs12.x
   memorySize: 256
   stage: ${opt:stage, 'dev'}
-  region: ca-central-1
+  region: us-east-2
+  environment:
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
 
 functions:
   getProperties:
     handler: src/handlers/getProperties.handler
     events:
-      - httpApi:
+      - http:
           method: GET
           path: /properties
+custom:
+  # custom domain
+  customDomain:
+    domainName: 'kioskify.ca'
+    basePath: 'api'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+  # Enable or disable caching globally
+  apiGatewayCaching:
+    enabled: false
+    clusterSize: '0.5' # defaults to '0.5'
+    ttlInSeconds: 300 # defaults to the maximum allowed: 3600
+    dataEncrypted: true # defaults to false
+    perKeyInvalidation:
+      requireAuthorization: true # default is true
+      handleUnauthorizedRequests: Ignore # default is "IgnoreWithWarning".
+

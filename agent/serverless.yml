@@ -13,6 +13,9 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: us-east-2
+  environment:
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
 
 functions:
   createAgent:
@@ -28,7 +31,7 @@ functions:
           method: GET
           path: /agents
           caching:
-            enabled: true
+            enabled: false
   getAgent:
     handler: src/handlers/getAgent.handler
     events:
@@ -36,7 +39,7 @@ functions:
           method: GET
           path: /agent/{id}
           caching:
-            enabled: true
+            enabled: false
             cacheKeyParameters:
               - name: request.path.id
               - name: request.header.Accept-Languag
@@ -69,7 +72,7 @@ custom:
     createRoute53Record: true
   # Enable or disable caching globally
   apiGatewayCaching:
-    enabled: true
+    enabled: false
     clusterSize: '0.5' # defaults to '0.5'
     ttlInSeconds: 300 # defaults to the maximum allowed: 3600
     dataEncrypted: true # defaults to false

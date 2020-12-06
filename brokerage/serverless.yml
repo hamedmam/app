@@ -4,49 +4,56 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
+  - serverless-domain-manager
+  - serverless-api-gateway-caching
 
 provider:
-  httpApi:
-    cors: true
   name: aws
   runtime: nodejs12.x
   memorySize: 256
   stage: ${opt:stage, 'dev'}
-  region: ca-central-1
+  region: us-east-2
   environment:
-    BROKERAGE_TABLE_NAME: ${self:custom.Brokerage.name}
-  iamRoleStatements:
-    - ${file(iam/BrokerageIAM.yml):BrokerageIAM}
-resources:
-  Resources:
-    Brokerage: ${file(resources/Brokerage.yml):Brokerage}
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
 functions:
   createBrokerage:
     handler: src/handlers/createBrokerage.handler
     events:
-      - httpApi:
+      - http:
           method: POST
           path: /brokerage
   getBrokerages:
     handler: src/handlers/getBrokerages.handler
     events:
-      - httpApi:
+      - http:
           method: GET
           path: /brokerages
   getBrokerage:
     handler: src/handlers/getBrokerage.handler
     events:
-      - httpApi:
+      - http:
           method: GET
           path: /brokerage/{id}
   updateBrokerageSeat:
     handler: src/handlers/updateBrokerageSeat.handler
     events:
-      - httpApi:
+      - http:
           method: PATCH
           path: /brokerage/{id}/seat/{seatCount}
-
 custom:
-  Brokerage:
-    name: !Ref Brokerage
-    arn: !GetAtt Brokerage.Arn
+  # custom domain
+  customDomain:
+    domainName: 'kioskify.ca'
+    basePath: 'api'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+  # Enable or disable caching globally
+  apiGatewayCaching:
+    enabled: false
+    clusterSize: '0.5' # defaults to '0.5'
+    ttlInSeconds: 300 # defaults to the maximum allowed: 3600
+    dataEncrypted: true # defaults to false
+    perKeyInvalidation:
+      requireAuthorization: true # default is true
+      handleUnauthorizedRequests: Ignore # default is "IgnoreWithWarning".
