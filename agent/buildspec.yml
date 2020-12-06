@@ -11,4 +11,5 @@ phases:
     commands:
   post_build:
     commands:
-      - sls deploy -v --region us-east-2
+      - sls create_domain
+      - sls deploy -v
