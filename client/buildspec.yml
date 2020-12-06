@@ -5,7 +5,7 @@ phases:
       nodejs: 12
     commands:
       - npm install -g serverless@2.4.0
-      - cd agent && npm install
+      - cd client && npm install
 
   build:
     commands:
