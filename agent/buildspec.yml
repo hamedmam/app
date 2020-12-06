@@ -11,5 +11,4 @@ phases:
     commands:
   post_build:
     commands:
-      - sls create_domain
       - sls deploy -v
