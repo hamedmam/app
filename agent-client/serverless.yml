@@ -4,44 +4,44 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
+  - serverless-domain-manager
+  - serverless-api-gateway-caching
 
 provider:
-  httpApi:
-    cors: true
   name: aws
   runtime: nodejs12.x
   memorySize: 256
   stage: ${opt:stage, 'dev'}
-  region: ca-central-1
+  region: us-east-2
   environment:
-    AGENT_CLIENT_TABLE_NAME: ${self:custom.AgentClient.name}
     REGION: ${self:provider.region}
     ENVIRONMENT: ${self:provider.stage}
-  iamRoleStatements:
-    - ${file(iam/AgentClientIAM.yml):AgentClientIAM}
-    - Effect: Allow
-      Action:
-        - lambda:InvokeFunction
-      Resource: '*'
-
-resources:
-  Resources:
-    AgentClient: ${file(resources/AgentClient.yml):AgentClient}
 functions:
   addClient:
     handler: src/handlers/addClient.handler
     events:
-      - httpApi:
+      - http:
           method: POST
           path: /agent/client/{id}
   getAgentClients:
     handler: src/handlers/getAgentClients.handler
     events:
-      - httpApi:
+      - http:
           method: GET
           path: /agent/{id}/clients
-
 custom:
-  AgentClient:
-    name: !Ref AgentClient
-    arn: !GetAtt AgentClient.Arn
+  # custom domain
+  customDomain:
+    domainName: 'kioskify.ca'
+    basePath: 'api'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+  # Enable or disable caching globally
+  apiGatewayCaching:
+    enabled: false
+    clusterSize: '0.5' # defaults to '0.5'
+    ttlInSeconds: 300 # defaults to the maximum allowed: 3600
+    dataEncrypted: true # defaults to false
+    perKeyInvalidation:
+      requireAuthorization: true # default is true
+      handleUnauthorizedRequests: Ignore # default is "IgnoreWithWarning".
