@@ -8,6 +8,6 @@ phases:
 
   build:
     commands:
-  post-build:
+  post_build:
     commands:
       - sls deploy -v --region ca-central-1
