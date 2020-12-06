@@ -5,10 +5,10 @@ phases:
       nodejs: 12
     commands:
       - npm install -g serverless@2.4.0
+      - cd agent && npm install
 
   build:
     commands:
   post_build:
     commands:
-      - cd agent
-      - sls deploy -v --region ca-central-1
+      - cd agent && sls deploy -v --region ca-central-1
