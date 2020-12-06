@@ -6,7 +6,7 @@ phases:
     commands:
       - echo hamed
       - npm install -g serverless@2.4.0
-      - cd agent && npm install
+      - cd brokerage && npm install
 
   build:
     commands:
