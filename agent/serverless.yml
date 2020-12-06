@@ -12,7 +12,7 @@ provider:
   runtime: nodejs12.x
   memorySize: 256
   stage: ${opt:stage, 'dev'}
-  region: ca-central-1
+  region: us-east-2
   environment:
     AGENT_TABLE_NAME: ${self:custom.Agent.name}
   iamRoleStatements:
