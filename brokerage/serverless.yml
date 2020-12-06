@@ -4,7 +4,6 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
-  - serverless-domain-manager
   - serverless-api-gateway-caching
 
 provider:
