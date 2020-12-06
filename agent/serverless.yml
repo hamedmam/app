@@ -13,13 +13,7 @@ provider:
   memorySize: 256
   stage: ${opt:stage, 'dev'}
   region: us-east-2
-  environment:
-    AGENT_TABLE_NAME: ${self:custom.Agent.name}
-  iamRoleStatements:
-    - ${file(iam/AgentIAM.yml):AgentIAM}
-resources:
-  Resources:
-    Agent: ${file(resources/Agent.yml):Agent}
+
 functions:
   createAgent:
     handler: src/handlers/createAgent.handler
@@ -67,9 +61,6 @@ functions:
           path: /agent/{id}/planType/{planType}
 
 custom:
-  Agent:
-    name: !Ref Agent
-    arn: !GetAtt Agent.Arn
   # custom domain
   customDomain:
     domainName: 'kioskify.ca'
