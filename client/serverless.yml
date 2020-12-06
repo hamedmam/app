@@ -45,7 +45,7 @@ functions:
 custom:
   # custom domain
   customDomain:
-    domainName: ${self:provider.stage}.kioskify.ca
+    domainName: kioskify.ca
     basePath: client
     stage: ${self:provider.stage}
     createRoute53Record: true
