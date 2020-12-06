@@ -25,12 +25,6 @@ functions:
           method: GET
           path: /properties
 custom:
-  # custom domain
-  customDomain:
-    domainName: 'kioskify.ca'
-    basePath: 'api'
-    stage: ${self:provider.stage}
-    createRoute53Record: true
   # Enable or disable caching globally
   apiGatewayCaching:
     enabled: false

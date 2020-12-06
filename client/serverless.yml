@@ -8,8 +8,6 @@ plugins:
   - serverless-api-gateway-caching
 
 provider:
-  httpApi:
-    cors: true
   name: aws
   runtime: nodejs12.x
   memorySize: 256
@@ -45,12 +43,6 @@ functions:
           path: /clients/{id}
 
 custom:
-  # custom domain
-  customDomain:
-    domainName: 'kioskify.ca'
-    basePath: 'api'
-    stage: ${self:provider.stage}
-    createRoute53Record: true
   # Enable or disable caching globally
   apiGatewayCaching:
     enabled: false
