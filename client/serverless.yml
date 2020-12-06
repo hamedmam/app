@@ -1,0 +1,52 @@
+service:
+  name: client-service
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+
+provider:
+  httpApi:
+    cors: true
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: ca-central-1
+  environment:
+    CLIENT_TABLE_NAME: ${self:custom.Client.name}
+  iamRoleStatements:
+    - ${file(iam/ClientIAM.yml):ClientIAM}
+resources:
+  Resources:
+    Client: ${file(resources/Client.yml):Client}
+functions:
+  createClient:
+    handler: src/handlers/createClient.handler
+    events:
+      - httpApi:
+          method: POST
+          path: /client
+  getClients:
+    handler: src/handlers/getClients.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /clients
+  getClient:
+    handler: src/handlers/getClient.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /client/{id}
+  getClientsById:
+    handler: src/handlers/getClientsById.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /clients/{id}
+
+custom:
+  Client:
+    name: !Ref Client
+    arn: !GetAtt Client.Arn

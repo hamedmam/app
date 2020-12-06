@@ -1,0 +1,14 @@
+AgentIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+    - dynamodb:Scan
+    - dynamodb:GetItem
+    - dynamodb:UpdateItem
+    - dynamodb:Query
+  Resource:
+    - ${self:custom.Agent.arn}
+    - Fn::Join:
+        - '/'
+        - - ${self:custom.Agent.arn}
+          - 'index/*'

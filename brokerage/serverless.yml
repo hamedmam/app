@@ -1,0 +1,52 @@
+service:
+  name: brokerage-service
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+
+provider:
+  httpApi:
+    cors: true
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: ca-central-1
+  environment:
+    BROKERAGE_TABLE_NAME: ${self:custom.Brokerage.name}
+  iamRoleStatements:
+    - ${file(iam/BrokerageIAM.yml):BrokerageIAM}
+resources:
+  Resources:
+    Brokerage: ${file(resources/Brokerage.yml):Brokerage}
+functions:
+  createBrokerage:
+    handler: src/handlers/createBrokerage.handler
+    events:
+      - httpApi:
+          method: POST
+          path: /brokerage
+  getBrokerages:
+    handler: src/handlers/getBrokerages.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /brokerages
+  getBrokerage:
+    handler: src/handlers/getBrokerage.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /brokerage/{id}
+  updateBrokerageSeat:
+    handler: src/handlers/updateBrokerageSeat.handler
+    events:
+      - httpApi:
+          method: PATCH
+          path: /brokerage/{id}/seat/{seatCount}
+
+custom:
+  Brokerage:
+    name: !Ref Brokerage
+    arn: !GetAtt Brokerage.Arn

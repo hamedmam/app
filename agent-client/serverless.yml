@@ -1,0 +1,47 @@
+service:
+  name: agent-client-service
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+
+provider:
+  httpApi:
+    cors: true
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: ca-central-1
+  environment:
+    AGENT_CLIENT_TABLE_NAME: ${self:custom.AgentClient.name}
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
+  iamRoleStatements:
+    - ${file(iam/AgentClientIAM.yml):AgentClientIAM}
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: '*'
+
+resources:
+  Resources:
+    AgentClient: ${file(resources/AgentClient.yml):AgentClient}
+functions:
+  addClient:
+    handler: src/handlers/addClient.handler
+    events:
+      - httpApi:
+          method: POST
+          path: /agent/client/{id}
+  getAgentClients:
+    handler: src/handlers/getAgentClients.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /agent/{id}/clients
+
+custom:
+  AgentClient:
+    name: !Ref AgentClient
+    arn: !GetAtt AgentClient.Arn

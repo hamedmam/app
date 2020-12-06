@@ -1,0 +1,9 @@
+ClientIAM:
+  Effect: Allow
+  Action:
+    - dynamodb:PutItem
+    - dynamodb:Scan
+    - dynamodb:GetItem
+    - dynamodb:BatchGetItem
+  Resource:
+    - ${self:custom.Client.arn}

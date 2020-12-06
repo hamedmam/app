@@ -1,0 +1,87 @@
+service:
+  name: agent-service
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+  - serverless-domain-manager
+  - serverless-api-gateway-caching
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: ca-central-1
+  environment:
+    AGENT_TABLE_NAME: ${self:custom.Agent.name}
+  iamRoleStatements:
+    - ${file(iam/AgentIAM.yml):AgentIAM}
+resources:
+  Resources:
+    Agent: ${file(resources/Agent.yml):Agent}
+functions:
+  createAgent:
+    handler: src/handlers/createAgent.handler
+    events:
+      - http:
+          method: POST
+          path: /agent
+  getAgents:
+    handler: src/handlers/getAgents.handler
+    events:
+      - http:
+          method: GET
+          path: /agents
+          caching:
+            enabled: true
+  getAgent:
+    handler: src/handlers/getAgent.handler
+    events:
+      - http:
+          method: GET
+          path: /agent/{id}
+          caching:
+            enabled: true
+            cacheKeyParameters:
+              - name: request.path.id
+              - name: request.header.Accept-Languag
+  getAgentByBrokerage:
+    handler: src/handlers/getAgentByBrokerage.handler
+    events:
+      - http:
+          method: GET
+          path: /agent/brokerage/{id}
+  updateAgentStatus:
+    handler: src/handlers/updateAgentStatus.handler
+    events:
+      - http:
+          method: PATCH
+          path: /agent/{id}/activityStatus/{activityStatus}
+
+  updateAgentPlan:
+    handler: src/handlers/updateAgentPlan.handler
+    events:
+      - http:
+          method: PATCH
+          path: /agent/{id}/planType/{planType}
+
+custom:
+  Agent:
+    name: !Ref Agent
+    arn: !GetAtt Agent.Arn
+  # custom domain
+  customDomain:
+    domainName: 'kioskify.ca'
+    basePath: 'api'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+  # Enable or disable caching globally
+  apiGatewayCaching:
+    enabled: true
+    clusterSize: '0.5' # defaults to '0.5'
+    ttlInSeconds: 300 # defaults to the maximum allowed: 3600
+    dataEncrypted: true # defaults to false
+    perKeyInvalidation:
+      requireAuthorization: true # default is true
+      handleUnauthorizedRequests: Ignore # default is "IgnoreWithWarning".

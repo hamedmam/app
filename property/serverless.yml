@@ -1,0 +1,23 @@
+service:
+  name: property-service
+
+plugins:
+  - serverless-webpack
+  - serverless-pseudo-parameters
+
+provider:
+  httpApi:
+    cors: true
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 256
+  stage: ${opt:stage, 'dev'}
+  region: ca-central-1
+
+functions:
+  getProperties:
+    handler: src/handlers/getProperties.handler
+    events:
+      - httpApi:
+          method: GET
+          path: /properties
