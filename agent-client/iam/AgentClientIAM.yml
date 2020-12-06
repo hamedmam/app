@@ -1,9 +1,0 @@
-AgentClientIAM:
-  Effect: Allow
-  Action:
-    - dynamodb:PutItem
-    - dynamodb:Scan
-    - dynamodb:GetItem
-    - dynamodb:Query
-  Resource:
-    - ${self:custom.AgentClient.arn}

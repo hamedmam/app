@@ -4,6 +4,8 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
+  - serverless-domain-manager
+  - serverless-api-gateway-caching
 
 provider:
   httpApi:
@@ -12,41 +14,49 @@ provider:
   runtime: nodejs12.x
   memorySize: 256
   stage: ${opt:stage, 'dev'}
-  region: ca-central-1
+  region: us-east-2
   environment:
-    CLIENT_TABLE_NAME: ${self:custom.Client.name}
-  iamRoleStatements:
-    - ${file(iam/ClientIAM.yml):ClientIAM}
-resources:
-  Resources:
-    Client: ${file(resources/Client.yml):Client}
+    REGION: ${self:provider.region}
+    ENVIRONMENT: ${self:provider.stage}
 functions:
   createClient:
     handler: src/handlers/createClient.handler
     events:
-      - httpApi:
+      - http:
           method: POST
           path: /client
   getClients:
     handler: src/handlers/getClients.handler
     events:
-      - httpApi:
+      - http:
           method: GET
           path: /clients
   getClient:
     handler: src/handlers/getClient.handler
     events:
-      - httpApi:
+      - http:
           method: GET
           path: /client/{id}
   getClientsById:
     handler: src/handlers/getClientsById.handler
     events:
-      - httpApi:
+      - http:
           method: GET
           path: /clients/{id}
 
 custom:
-  Client:
-    name: !Ref Client
-    arn: !GetAtt Client.Arn
+  # custom domain
+  customDomain:
+    domainName: 'kioskify.ca'
+    basePath: 'api'
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+  # Enable or disable caching globally
+  apiGatewayCaching:
+    enabled: false
+    clusterSize: '0.5' # defaults to '0.5'
+    ttlInSeconds: 300 # defaults to the maximum allowed: 3600
+    dataEncrypted: true # defaults to false
+    perKeyInvalidation:
+      requireAuthorization: true # default is true
+      handleUnauthorizedRequests: Ignore # default is "IgnoreWithWarning".
