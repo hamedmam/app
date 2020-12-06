@@ -4,6 +4,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
+  - serverless-domain-manager
   - serverless-api-gateway-caching
 
 provider:
@@ -29,6 +30,12 @@ functions:
           method: GET
           path: /agent/{id}/clients
 custom:
+  # custom domain
+  customDomain:
+    domainName: ${self:provider.stage}.kioskify.ca
+    basePath: client-agent
+    stage: ${self:provider.stage}
+    createRoute53Record: true
   # Enable or disable caching globally
   apiGatewayCaching:
     enabled: false

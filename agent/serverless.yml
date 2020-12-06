@@ -66,8 +66,8 @@ functions:
 custom:
   # custom domain
   customDomain:
-    domainName: 'kioskify.ca'
-    basePath: 'api'
+    domainName: ${self:provider.stage}.kioskify.ca
+    basePath: agent
     stage: ${self:provider.stage}
     createRoute53Record: true
   # Enable or disable caching globally

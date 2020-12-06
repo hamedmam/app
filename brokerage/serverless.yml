@@ -4,6 +4,7 @@ service:
 plugins:
   - serverless-webpack
   - serverless-pseudo-parameters
+  - serverless-domain-manager
   - serverless-api-gateway-caching
 
 provider:
@@ -21,26 +22,32 @@ functions:
     events:
       - http:
           method: POST
-          path: /brokerage
+          path: /
   getBrokerages:
     handler: src/handlers/getBrokerages.handler
     events:
       - http:
           method: GET
-          path: /brokerages
+          path: /
   getBrokerage:
     handler: src/handlers/getBrokerage.handler
     events:
       - http:
           method: GET
-          path: /brokerage/{id}
+          path: /{id}
   updateBrokerageSeat:
     handler: src/handlers/updateBrokerageSeat.handler
     events:
       - http:
           method: PATCH
-          path: /brokerage/{id}/seat/{seatCount}
+          path: /{id}/seat/{seatCount}
 custom:
+  # custom domain
+  customDomain:
+    domainName: ${self:provider.stage}.kioskify.ca
+    basePath: brokerage
+    stage: ${self:provider.stage}
+    createRoute53Record: true
   # Enable or disable caching globally
   apiGatewayCaching:
     enabled: false
