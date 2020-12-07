@@ -6,7 +6,6 @@ exports.up = async function (knex) {
     t.string('user_sub', 60).notNull()
     t.string('name', 50).notNull()
     t.specificType('email', 'CITEXT').unique().notNull()
-    t.specificType('phone_number', 'domain_phone_number').unique().notNull()
     t.boolean('is_active').defaultTo(false)
     t.boolean('has_confirmed_email').defaultTo(false)
     t.uuid('brokerage_id')
