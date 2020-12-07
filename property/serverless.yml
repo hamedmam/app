@@ -23,12 +23,12 @@ functions:
     events:
       - http:
           method: GET
-          path: /properties
+          path: /
 custom:
   # custom domain
   customDomain:
     domainName: kioskify.ca
-    basePath: property
+    basePath: properties
     stage: ${self:provider.stage}
     createRoute53Record: true
   # Enable or disable caching globally

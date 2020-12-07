@@ -29,7 +29,7 @@ functions:
     events:
       - http:
           method: GET
-          path: /agents
+          path: /
           caching:
             enabled: false
   getAgent:
@@ -48,26 +48,26 @@ functions:
     events:
       - http:
           method: GET
-          path: /agent/brokerage/{id}
+          path: /brokerage/{id}
   updateAgentStatus:
     handler: src/handlers/updateAgentStatus.handler
     events:
       - http:
           method: PATCH
-          path: /agent/{id}/activityStatus/{activityStatus}
+          path: /{id}/activityStatus/{activityStatus}
 
   updateAgentPlan:
     handler: src/handlers/updateAgentPlan.handler
     events:
       - http:
           method: PATCH
-          path: /agent/{id}/planType/{planType}
+          path: /{id}/planType/{planType}
 
 custom:
   # custom domain
   customDomain:
     domainName: kioskify.ca
-    basePath: '/'
+    basePath: agents
     stage: ${self:provider.stage}
     createRoute53Record: true
   # Enable or disable caching globally
