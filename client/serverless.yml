@@ -28,7 +28,7 @@ functions:
     events:
       - http:
           method: GET
-          path: /clients
+          path: /
   getClient:
     handler: src/handlers/getClient.handler
     events:
@@ -40,13 +40,13 @@ functions:
     events:
       - http:
           method: GET
-          path: /clients/{id}
+          path: /{id}
 
 custom:
   # custom domain
   customDomain:
-    domainName: kioskify.ca
-    basePath: '/'
+    domainName: dev.kioskify.ca
+    basePath: clients
     stage: ${self:provider.stage}
     createRoute53Record: true
   # Enable or disable caching globally
