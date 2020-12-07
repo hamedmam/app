@@ -46,7 +46,7 @@ custom:
   # custom domain
   customDomain:
     domainName: kioskify.ca
-    basePath: client
+    basePath: ''
     stage: ${self:provider.stage}
     createRoute53Record: true
   # Enable or disable caching globally
