@@ -11,8 +11,6 @@ exports.up = async function (knex) {
     t.boolean('has_confirmed_email').defaultTo(false)
     t.uuid('brokerage_id')
     t.uuid('plan_id')
-    t.foreign('brokerage_id').references('brokerages.id')
-    t.foreign('plan_id').references('plans.id')
   })
 }
 
