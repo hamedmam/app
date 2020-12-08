@@ -1,6 +1,6 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
 
-const pool = require('../db')
+import pool from '../db'
 
 const getItemById = (tableName, id) =>
   `SELECT * FROM ${tableName} WHERE id = '${id}'`

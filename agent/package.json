@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.784.0",
+    "pg": "^8.5.1",
     "serverless-pseudo-parameters": "^2.5.0",
     "source-map-support": "^0.5.10"
   },
