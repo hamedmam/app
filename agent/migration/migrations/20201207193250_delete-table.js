@@ -1,9 +1,8 @@
-
-exports.up = function(knex) {
+exports.up = function (knex) {
   return knex.schema.dropTable('agents')
-};
+}
 
-exports.down = function(knex) {
+exports.down = async function (knex) {
   await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"')
   await knex.raw('CREATE EXTENSION IF NOT EXISTS CITEXT')
   return knex.schema.createTable('agents', (t) => {
@@ -16,4 +15,4 @@ exports.down = function(knex) {
     t.uuid('brokerage_id')
     t.uuid('plan_id')
   })
-};
+}
