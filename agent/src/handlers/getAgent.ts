@@ -1,29 +1,23 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DynamoDB } from 'aws-sdk'
 
-const dynamodb = new DynamoDB.DocumentClient()
+const pool = require('./db')
+
+const getItemById = (tableName, id) =>
+  `SELECT * FROM ${tableName} WHERE id = '${id}'`
 
 const getAgent: APIGatewayProxyHandler = async (event, _context) => {
   const { id } = event.pathParameters
+
   try {
-    const result = await dynamodb
-      .get({
-        Key: { id },
-        TableName: process.env.AGENT_TABLE_NAME,
-      })
-      .promise()
-    if (!result.Item) {
-      return {
-        statusCode: 404,
-        body: `Agent with ID: ${id} Not Found`,
-      }
-    }
+    const response = await pool.query(getItemById('clients', id))
+
+    console.log(response)
     return {
       statusCode: 200,
-      body: JSON.stringify(result.Item),
+      body: JSON.stringify(response),
     }
-  } catch (error) {
-    console.error(error)
+  } catch (err) {
+    console.log(err)
   }
 }
 
