@@ -6,9 +6,14 @@ phases:
     commands:
       - npm install -g serverless@2.4.0
       - cd agent && npm install
+      - cd migration
+      - npm install
 
   build:
     commands:
+      - DB_HOST=$DB_HOST DB_PORT=$DB_PORT DB_USERNAME=$DB_USERNAME DB_PASSWORD=$DB_PASSWORD DB_DATABASE=$DB_DATABASE npm run migrate-up
+
   post_build:
     commands:
+      - cd ..
       - sls deploy -v
