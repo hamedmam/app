@@ -1,5 +1,5 @@
-import * as pg from 'pg'
-const { Pool } = pg
+const { Pool } = require('pg')
+
 import dbConfig from './secrets/db_configuration'
 const { user, password, host, port, database } = dbConfig
 
