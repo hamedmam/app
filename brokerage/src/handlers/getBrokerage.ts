@@ -1,29 +1,26 @@
-import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DynamoDB } from 'aws-sdk'
+import { APIGatewayProxyHandler, APIGatewayProxyEvent } from 'aws-lambda'
+import pool from '../db'
+import { getItemById, TABLE_NAME } from '../query'
 
-const dynamodb = new DynamoDB.DocumentClient()
+type Event = {
+  pathParameters: {
+    id: string
+  }
+}
 
-const getBrokerage: APIGatewayProxyHandler = async (event, _context) => {
+const getBrokerage: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent & Event,
+  _context
+) => {
   const { id } = event.pathParameters
   try {
-    const result = await dynamodb
-      .get({
-        Key: { id },
-        TableName: process.env.BROKERAGE_TABLE_NAME,
-      })
-      .promise()
-    if (!result.Item) {
-      return {
-        statusCode: 404,
-        body: `Brokerage with ID: ${id} Not Found`,
-      }
-    }
+    const response = await pool.query(getItemById(TABLE_NAME, id))
     return {
       statusCode: 200,
-      body: JSON.stringify(result.Item),
+      body: JSON.stringify(response.rows[0]),
     }
   } catch (error) {
-    console.error(error)
+    console.log(error)
   }
 }
 

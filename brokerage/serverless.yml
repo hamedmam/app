@@ -2,10 +2,12 @@ service:
   name: brokerage-service
 
 plugins:
-  - serverless-webpack
   - serverless-pseudo-parameters
   - serverless-domain-manager
   - serverless-api-gateway-caching
+  - serverless-offline
+  - serverless-plugin-typescript
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -22,7 +24,7 @@ functions:
     events:
       - http:
           method: POST
-          path: /
+          path: /brokerage
   getBrokerages:
     handler: src/handlers/getBrokerages.handler
     events:

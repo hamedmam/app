@@ -2,10 +2,12 @@ service:
   name: property-service
 
 plugins:
-  - serverless-webpack
   - serverless-pseudo-parameters
   - serverless-domain-manager
   - serverless-api-gateway-caching
+  - serverless-offline
+  - serverless-plugin-typescript
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -18,12 +20,25 @@ provider:
     ENVIRONMENT: ${self:provider.stage}
 
 functions:
+  createProperty:
+    handler: src/handlers/createProperty.handler
+    events:
+      - http:
+          method: POST
+          path: /property
   getProperties:
     handler: src/handlers/getProperties.handler
     events:
       - http:
           method: GET
           path: /
+  getProperty:
+    handler: src/handlers/getProperty.handler
+    events:
+      - http:
+          method: GET
+          path: /{id}
+
 custom:
   # custom domain
   customDomain:

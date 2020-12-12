@@ -12,7 +12,7 @@ type Event = {
   }
 }
 
-const createClient: APIGatewayProxyHandler = async (
+const createProperty: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent & Event,
   _context
 ) => {
@@ -45,6 +45,6 @@ const inputSchema = {
   },
 }
 
-export const handler = middy(createClient)
+export const handler = middy(createProperty)
   .use(jsonBodyParser())
   .use(validator({ inputSchema }))

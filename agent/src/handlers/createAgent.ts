@@ -1,37 +1,58 @@
-import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DynamoDB } from 'aws-sdk'
+import { APIGatewayProxyEvent, APIGatewayProxyHandler } from 'aws-lambda'
+import middy from '@middy/core'
+import jsonBodyParser from '@middy/http-json-body-parser'
+import validator from '@middy/validator'
+import pool from '../db'
+import { createItem, TABLE_NAME } from './../query'
 
-const dynamodb = new DynamoDB.DocumentClient()
-
-const createAgent: APIGatewayProxyHandler = async (event, _context) => {
-  const now = new Date()
-
-  const agent = {
-    id: Math.random().toString(),
-    brokerageId: '123456',
-    activityStatus: 'inactive',
-    createdAt: now.toISOString(),
-    planType: 'free',
-    firstName: 'Hamed',
-    lastName: 'Mamdoohi',
-    avatar: 'https://nofiredrills.com/wp-content/uploads/2016/10/myavatar.png',
-    email: 'hamed.mamdoohi@gmail.com',
-  }
-  try {
-    await dynamodb
-      .put({
-        TableName: process.env.AGENT_TABLE_NAME,
-        Item: agent,
-      })
-      .promise()
-  } catch (error) {
-    console.error(error)
-  }
-
-  return {
-    statusCode: 201,
-    body: JSON.stringify(agent),
+type Event = {
+  body: {
+    id: string
+    user_sub: string
+    name: string
+    email: string
   }
 }
 
-export const handler = createAgent
+const createAgent: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent & Event,
+  _context
+) => {
+  const { id, user_sub, name, email } = event.body
+  try {
+    const res = await pool.query(
+      createItem(
+        TABLE_NAME,
+        '(id, user_sub, name, email)',
+        `('${id}', '${user_sub}', '${name}', '${email}')`
+      )
+    )
+
+    return {
+      statusCode: 201,
+      body: JSON.stringify({ message: 'success' }),
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const inputSchema = {
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', minLength: 36, maxLength: 36 },
+        user_sub: { type: 'string', minLength: 36, maxLength: 36 },
+        name: { type: 'string' },
+        email: { type: 'string' },
+      },
+      required: ['id', 'user_sub', 'name', 'email'], // Insert here all required event properties
+    },
+  },
+}
+
+export const handler = middy(createAgent)
+  .use(jsonBodyParser())
+  .use(validator({ inputSchema }))

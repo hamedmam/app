@@ -1,18 +1,14 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DynamoDB } from 'aws-sdk'
 
-const dynamodb = new DynamoDB.DocumentClient()
+import pool from '../db'
+import { getItems, TABLE_NAME } from '../query'
 
 const getBrokerages: APIGatewayProxyHandler = async (event, _context) => {
   try {
-    const brokerages = await dynamodb
-      .scan({
-        TableName: process.env.BROKERAGE_TABLE_NAME,
-      })
-      .promise()
+    const response = await pool.query(getItems(TABLE_NAME))
     return {
       statusCode: 200,
-      body: JSON.stringify(brokerages),
+      body: JSON.stringify(response.rows),
     }
   } catch (error) {
     console.error(error)

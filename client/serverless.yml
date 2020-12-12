@@ -2,10 +2,12 @@ service:
   name: client-service
 
 plugins:
-  - serverless-webpack
   - serverless-pseudo-parameters
   - serverless-domain-manager
   - serverless-api-gateway-caching
+  - serverless-offline
+  - serverless-plugin-typescript
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -31,12 +33,6 @@ functions:
           path: /
   getClient:
     handler: src/handlers/getClient.handler
-    events:
-      - http:
-          method: GET
-          path: /client/{id}
-  getClientsById:
-    handler: src/handlers/getClientsById.handler
     events:
       - http:
           method: GET
