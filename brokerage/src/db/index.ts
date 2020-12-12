@@ -1,11 +1,13 @@
+import { Pool } from 'pg'
+
 const { DB_HOST, DB_PORT, DB_USERNAME, DB_PASSWORD, DB_NAME } = process.env
 
-const dbConfig = {
+const pool = new Pool({
   user: DB_USERNAME,
   password: DB_PASSWORD,
   host: DB_HOST,
-  port: DB_PORT,
+  port: Number(DB_PORT),
   database: DB_NAME,
-}
+})
 
-export default dbConfig
+export default pool

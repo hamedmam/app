@@ -1,31 +1,49 @@
-import { APIGatewayProxyHandler } from 'aws-lambda'
-import { DynamoDB } from 'aws-sdk'
+import { APIGatewayProxyEvent, APIGatewayProxyHandler } from 'aws-lambda'
+import validator from '@middy/validator'
+import jsonBodyParser from '@middy/http-json-body-parser'
+import middy from '@middy/core'
+import pool from '../db'
+import { createItem, TABLE_NAME } from '../query'
 
-const dynamodb = new DynamoDB.DocumentClient()
-
-const createBrokerage: APIGatewayProxyHandler = async (event, _context) => {
-  const now = new Date()
-
-  const brokerage = {
-    id: Math.random().toString(),
-    createdAt: now.toISOString(),
-    seatCount: 0,
-  }
-  try {
-    await dynamodb
-      .put({
-        TableName: process.env.BROKERAGE_TABLE_NAME,
-        Item: brokerage,
-      })
-      .promise()
-  } catch (error) {
-    console.error(error)
-  }
-
-  return {
-    statusCode: 201,
-    body: JSON.stringify(brokerage),
+type Event = {
+  body: {
+    id: string
+    name: string
   }
 }
 
-export const handler = createBrokerage
+const createBrokerage: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent & Event,
+  _context
+) => {
+  const { id, name } = event.body
+  try {
+    const res = await pool.query(
+      createItem(TABLE_NAME, '(id, name)', `('${id}', '${name}')`)
+    )
+    return {
+      statusCode: 201,
+      body: JSON.stringify({ message: 'success' }),
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const inputSchema = {
+  type: 'object',
+  properties: {
+    body: {
+      type: 'object',
+      properties: {
+        id: { type: 'string', minLength: 36, maxLength: 36 },
+        name: { type: 'string' },
+      },
+      required: ['id', 'name'], // Insert here all required event properties
+    },
+  },
+}
+
+export const handler = middy(createBrokerage)
+  .use(jsonBodyParser())
+  .use(validator({ inputSchema }))

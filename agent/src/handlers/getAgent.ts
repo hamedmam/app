@@ -1,23 +1,30 @@
-import { APIGatewayProxyHandler } from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyHandler } from 'aws-lambda'
 
 import pool from '../db'
+import { getItemById, TABLE_NAME } from './../query'
 
-const getItemById = (tableName, id) =>
-  `SELECT * FROM ${tableName} WHERE id = '${id}'`
+type Event = {
+  pathParameters: {
+    id: string
+  }
+}
 
-const getAgent: APIGatewayProxyHandler = async (event, _context) => {
+const getAgent: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent & Event,
+  _context
+) => {
   const { id } = event.pathParameters
 
   try {
-    const response = await pool.query(getItemById('clients', id))
-
-    console.log(response)
+    const response = await pool.query(getItemById(TABLE_NAME, id))
     return {
       statusCode: 200,
-      body: JSON.stringify(response),
+      body: JSON.stringify(response.rows[0]),
     }
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.log(err)
+    return err
   }
 }
 

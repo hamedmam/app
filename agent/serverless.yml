@@ -2,10 +2,12 @@ service:
   name: agent-service
 
 plugins:
-  - serverless-webpack
   - serverless-pseudo-parameters
   - serverless-domain-manager
   - serverless-api-gateway-caching
+  - serverless-offline
+  - serverless-plugin-typescript
+  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -43,8 +45,8 @@ functions:
             cacheKeyParameters:
               - name: request.path.id
               - name: request.header.Accept-Languag
-  getAgentByBrokerage:
-    handler: src/handlers/getAgentByBrokerage.handler
+  getAgentsByBrokerage:
+    handler: src/handlers/getAgentsByBrokerage.handler
     events:
       - http:
           method: GET

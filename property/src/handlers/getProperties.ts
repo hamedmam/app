@@ -1,15 +1,14 @@
 import { APIGatewayProxyHandler } from 'aws-lambda'
 
+import pool from '../db'
+import { getItems, TABLE_NAME } from '../query'
+
 const getProperties: APIGatewayProxyHandler = async (event, _context) => {
   try {
-    const musics = [
-      { id: 1, artist: 'Sirvan', song: 'Zendegi' },
-      { id: 2, artist: 'Alireza', song: 'Ay Dele Ghafel' },
-    ]
-
+    const response = await pool.query(getItems(TABLE_NAME))
     return {
       statusCode: 200,
-      body: JSON.stringify(musics),
+      body: JSON.stringify(response.rows),
     }
   } catch (error) {
     console.error(error)
