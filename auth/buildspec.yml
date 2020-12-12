@@ -5,11 +5,10 @@ phases:
       nodejs: 12
     commands:
       - npm install -g serverless@2.4.0
-      - cd property && npm install
+      - cd auth && npm install
 
   build:
     commands:
   post_build:
     commands:
-      - cd auth
       - sls deploy -v
