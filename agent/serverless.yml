@@ -26,12 +26,14 @@ functions:
       - http:
           method: POST
           path: /agent
+          authorizer: ${self:custom.authorizer}
   getAgents:
     handler: src/handlers/getAgents.handler
     events:
       - http:
           method: GET
           path: /
+          authorizer: ${self:custom.authorizer}
           caching:
             enabled: false
   getAgent:
@@ -40,6 +42,7 @@ functions:
       - http:
           method: GET
           path: /agent/{id}
+          authorizer: ${self:custom.authorizer}
           caching:
             enabled: false
             cacheKeyParameters:
@@ -51,21 +54,24 @@ functions:
       - http:
           method: GET
           path: /brokerage/{id}
+          authorizer: ${self:custom.authorizer}
   updateAgentStatus:
     handler: src/handlers/updateAgentStatus.handler
     events:
       - http:
           method: PATCH
           path: /{id}/activityStatus/{activityStatus}
-
+          authorizer: ${self:custom.authorizer}
   updateAgentPlan:
     handler: src/handlers/updateAgentPlan.handler
     events:
       - http:
           method: PATCH
           path: /{id}/planType/{planType}
+          authorizer: ${self:custom.authorizer}
 
 custom:
+  authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:auth-service-${self:provider.region}-auth
   # custom domain
   customDomain:
     domainName: kioskify.ca
