@@ -71,7 +71,7 @@ functions:
           authorizer: ${self:custom.authorizer}
 
 custom:
-  authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:auth-service-${self:provider.region}-auth
+  authorizer: arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:auth-service-${self:provider.stage}-auth
   # custom domain
   customDomain:
     domainName: kioskify.ca
